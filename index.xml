@@ -1,28 +1,20 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
-        <title>My New Hugo Site</title>
-        <link>http://example.org/</link>
+        <title>Nobody Blog</title>
+        <link>https://gbzy.github.io/</link>
         <description>This is my cool site</description>
         <generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Thu, 25 Aug 2022 18:20:16 &#43;0800</lastBuildDate>
-            <atom:link href="http://example.org/index.xml" rel="self" type="application/rss+xml" />
+            <atom:link href="https://gbzy.github.io/index.xml" rel="self" type="application/rss+xml" />
         <item>
     <title>Flink Production CheckList</title>
-    <link>http://example.org/posts/flink-production-checklist/</link>
+    <link>https://gbzy.github.io/posts/flink-production-checklist/</link>
     <pubDate>Thu, 25 Aug 2022 18:20:16 &#43;0800</pubDate>
     <author>LY</author>
-    <guid>http://example.org/posts/flink-production-checklist/</guid>
+    <guid>https://gbzy.github.io/posts/flink-production-checklist/</guid>
     <description><![CDATA[显式设置最大并行度 最大并行度决定了算子状态的扩展能力； 0 &lt; parallelism &lt;= max parallelism &lt;= 2^15； 默认128； 为DataStream每个算子设置UID UID用于savepoint中算子与状态的映射，更新JobGraph会导致UID的更新，设置固定的UID方便从Savepoint恢复； 选择合适的状态后端 目前状态后端有HashMapStateBackend和EmbeddedRocksDBStateBackend，需保存大状态的任务优先选择EmbeddedRocksDBStateBackend，也是目前云服务的默认状态后端； 选择合适的Checkpoint时间 根据服务的SLA时间；
 数据的写入间隔；
 TaskManager的性能，Checkpoint会增加额外的CPU负载；
 配置高可用的JobManager 优先选择增量Checkpoint 提升checkpoint速度，减少cpu负载； 批任务选择合适的Shuffle类型 批任务数据量大,并行度高时可选择sort merge join 根据Connector文档选择正确的数据类型映射 调试过程中会出现较多的数据类型不匹配的问题，可以通过catalog或脚本方式实现自动数据类型转换和映射； Jdbc Connector中tinyint(1)格式转换，tinyInt1isBit=false，时区也会影响查询准确性 Lookup Join需要评估维度表的性能是否满足产线需求 可以通过异步IO的方式提升维表Connector性能； 大表双流Join场景优先考虑是否可转换为Union操作 Jdbc Source优先配置流式读取 Sink端优先设置批量写入 Kafka Source需打开分区发现功能后才支持Topic动态扩展分区 可以合并多个SQL作业提升资源利用率 ]]></description>
-</item>
-<item>
-    <title>My First Post</title>
-    <link>http://example.org/posts/my-first-post/</link>
-    <pubDate>Thu, 25 Aug 2022 18:19:55 &#43;0800</pubDate>
-    <author>Author</author>
-    <guid>http://example.org/posts/my-first-post/</guid>
-    <description><![CDATA[]]></description>
 </item>
 </channel>
 </rss>
