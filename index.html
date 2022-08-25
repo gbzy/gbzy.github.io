@@ -55,7 +55,18 @@
     </div>
 </header><main class="main">
                 <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="home-subtitle"><div id="id-1" class="typeit"></div></div><div class="links"></div></div>
-</div></div>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/flink-production-checklist/">Flink Production CheckList</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>LY</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-08-25">2022-08-25</time></span></div><div class="content">显式设置最大并行度 最大并行度决定了算子状态的扩展能力； 0 &lt; parallelism &lt;= max parallelism &lt;= 2^15； 默认128； 为DataStream每个算子设置UID UID用于savepoint中算子与状态的映射，更新JobGraph会导致UID的更新，设置固定的UID方便从Savepoint恢复； 选择合适的状态后端 目前状态后端有HashMapStateBackend和EmbeddedRocksDBStateBackend，需保存大状态的任务优先选择EmbeddedRocksDBStateBackend，也是目前云服务的默认状态后端； 选择合适的Checkpoint时间 根据服务的SLA时间；
+数据的写入间隔；
+TaskManager的性能，Checkpoint会增加额外的CPU负载；
+配置高可用的JobManager 优先选择增量Checkpoint 提升checkpoint速度，减少cpu负载； 批任务选择合适的Shuffle类型 批任务数据量大,并行度高时可选择sort merge join 根据Connector文档选择正确的数据类型映射 调试过程中会出现较多的数据类型不匹配的问题，可以通过catalog或脚本方式实现自动数据类型转换和映射； Jdbc Connector中tinyint(1)格式转换，tinyInt1isBit=false，时区也会影响查询准确性 Lookup Join需要评估维度表的性能是否满足产线需求 可以通过异步IO的方式提升维表Connector性能； 大表双流Join场景优先考虑是否可转换为Union操作 Jdbc Source优先配置流式读取 Sink端优先设置批量写入 Kafka Source需打开分区发现功能后才支持Topic动态扩展分区 可以合并多个SQL作业提升资源利用率 </div><div class="post-footer">
+        <a href="/posts/flink-production-checklist/">Read More</a></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/my-first-post/">My First Post</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Author</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-08-25">2022-08-25</time></span></div><div class="content"></div><div class="post-footer">
+        <a href="/posts/my-first-post/">Read More</a></div>
+</article></div></div>
             </main><footer class="footer">
         <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.101.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
                 </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank"></a></span></div>

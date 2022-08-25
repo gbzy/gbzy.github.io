@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Flink Production CheckList - My New Hugo Site</title><meta name="Description" content="This is my cool site"><meta property="og:title" content="Flink Production CheckList" />
+<meta property="og:description" content="显式设置最大并行度 最大并行度决定了算子状态的扩展能力； 0 &lt; parallelism &lt;= max parallelism &lt;= 2^15； 默认128； 为DataStream每个算子设置UID UID用于savepoint中算子与状态的映射，更新JobGraph会导致UID的更新，设置固定的UID方便从Savepoint恢复； 选择合适的状态后端 目前状态后端有HashMapStateBackend和EmbeddedRocksDBStateBackend，需保存大状态的任务优先选择EmbeddedRocksDBStateBackend，也是目前云服务的默认状态后端； 选择合适的Checkpoint时间 根据服务的SLA时间；
+数据的写入间隔；
+TaskManager的性能，Checkpoint会增加额外的CPU负载；
+配置高可用的JobManager 优先选择增量Checkpoint 提升checkpoint速度，减少cpu负载； 批任务选择合适的Shuffle类型 批任务数据量大,并行度高时可选择sort merge join 根据Connector文档选择正确的数据类型映射 调试过程中会出现较多的数据类型不匹配的问题，可以通过catalog或脚本方式实现自动数据类型转换和映射； Jdbc Connector中tinyint(1)格式转换，tinyInt1isBit=false，时区也会影响查询准确性 Lookup Join需要评估维度表的性能是否满足产线需求 可以通过异步IO的方式提升维表Connector性能； 大表双流Join场景优先考虑是否可转换为Union操作 Jdbc Source优先配置流式读取 Sink端优先设置批量写入 Kafka Source需打开分区发现功能后才支持Topic动态扩展分区 可以合并多个SQL作业提升资源利用率 " />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://example.org/posts/flink-production-checklist/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-08-25T18:20:16+08:00" />
+<meta property="article:modified_time" content="2022-08-25T18:20:16+08:00" /><meta property="og:site_name" content="My cool site" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Flink Production CheckList"/>
+<meta name="twitter:description" content="显式设置最大并行度 最大并行度决定了算子状态的扩展能力； 0 &lt; parallelism &lt;= max parallelism &lt;= 2^15； 默认128； 为DataStream每个算子设置UID UID用于savepoint中算子与状态的映射，更新JobGraph会导致UID的更新，设置固定的UID方便从Savepoint恢复； 选择合适的状态后端 目前状态后端有HashMapStateBackend和EmbeddedRocksDBStateBackend，需保存大状态的任务优先选择EmbeddedRocksDBStateBackend，也是目前云服务的默认状态后端； 选择合适的Checkpoint时间 根据服务的SLA时间；
+数据的写入间隔；
+TaskManager的性能，Checkpoint会增加额外的CPU负载；
+配置高可用的JobManager 优先选择增量Checkpoint 提升checkpoint速度，减少cpu负载； 批任务选择合适的Shuffle类型 批任务数据量大,并行度高时可选择sort merge join 根据Connector文档选择正确的数据类型映射 调试过程中会出现较多的数据类型不匹配的问题，可以通过catalog或脚本方式实现自动数据类型转换和映射； Jdbc Connector中tinyint(1)格式转换，tinyInt1isBit=false，时区也会影响查询准确性 Lookup Join需要评估维度表的性能是否满足产线需求 可以通过异步IO的方式提升维表Connector性能； 大表双流Join场景优先考虑是否可转换为Union操作 Jdbc Source优先配置流式读取 Sink端优先设置批量写入 Kafka Source需打开分区发现功能后才支持Topic动态扩展分区 可以合并多个SQL作业提升资源利用率 "/>
+<meta name="application-name" content="My cool site">
+<meta name="apple-mobile-web-app-title" content="My cool site"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://example.org/posts/flink-production-checklist/" /><link rel="prev" href="http://example.org/posts/my-first-post/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Flink Production CheckList",
+        "inLanguage": "en-us",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/example.org\/posts\/flink-production-checklist\/"
+        },"genre": "posts","wordcount":  40 ,
+        "url": "http:\/\/example.org\/posts\/flink-production-checklist\/","datePublished": "2022-08-25T18:20:16+08:00","dateModified": "2022-08-25T18:20:16+08:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "LY"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="My New Hugo Site">My cool site</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="My New Hugo Site">My cool site</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Flink Production CheckList</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>LY</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2022-08-25">2022-08-25</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;40 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;One minute&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h5 id="显式设置最大并行度">显式设置最大并行度</h5>
+<ul>
+<li>最大并行度决定了算子状态的扩展能力；</li>
+<li>0 &lt; parallelism &lt;= max parallelism &lt;= 2^15；</li>
+<li>默认128；</li>
+</ul>
+<h5 id="为datastream每个算子设置uid">为DataStream每个算子设置UID</h5>
+<ul>
+<li>UID用于savepoint中算子与状态的映射，更新JobGraph会导致UID的更新，设置固定的UID方便从Savepoint恢复；</li>
+</ul>
+<h5 id="选择合适的状态后端">选择合适的状态后端</h5>
+<ul>
+<li>目前状态后端有HashMapStateBackend和EmbeddedRocksDBStateBackend，需保存大状态的任务优先选择EmbeddedRocksDBStateBackend，也是目前云服务的默认状态后端；</li>
+</ul>
+<h5 id="选择合适的checkpoint时间">选择合适的Checkpoint时间</h5>
+<ul>
+<li>
+<p>根据服务的SLA时间；</p>
+</li>
+<li>
+<p>数据的写入间隔；</p>
+</li>
+<li>
+<p>TaskManager的性能，Checkpoint会增加额外的CPU负载；</p>
+</li>
+</ul>
+<h5 id="配置高可用的jobmanager">配置高可用的JobManager</h5>
+<h5 id="优先选择增量checkpoint">优先选择增量Checkpoint</h5>
+<ul>
+<li>提升checkpoint速度，减少cpu负载；</li>
+</ul>
+<h5 id="批任务选择合适的shuffle类型">批任务选择合适的Shuffle类型</h5>
+<ul>
+<li>批任务数据量大,并行度高时可选择sort merge join</li>
+</ul>
+<h5 id="根据connector文档选择正确的数据类型映射">根据Connector文档选择正确的数据类型映射</h5>
+<ul>
+<li>调试过程中会出现较多的数据类型不匹配的问题，可以通过catalog或脚本方式实现自动数据类型转换和映射；</li>
+<li>Jdbc Connector中tinyint(1)格式转换，tinyInt1isBit=false，时区也会影响查询准确性</li>
+</ul>
+<h5 id="lookup-join需要评估维度表的性能是否满足产线需求">Lookup Join需要评估维度表的性能是否满足产线需求</h5>
+<ul>
+<li>可以通过异步IO的方式提升维表Connector性能；</li>
+</ul>
+<h5 id="大表双流join场景优先考虑是否可转换为union操作">大表双流Join场景优先考虑是否可转换为Union操作</h5>
+<h5 id="jdbc-source优先配置流式读取">Jdbc Source优先配置流式读取</h5>
+<h5 id="sink端优先设置批量写入">Sink端优先设置批量写入</h5>
+<h5 id="kafka-source需打开分区发现功能后才支持topic动态扩展分区">Kafka Source需打开分区发现功能后才支持Topic动态扩展分区</h5>
+<h5 id="可以合并多个sql作业提升资源利用率">可以合并多个SQL作业提升资源利用率</h5>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2022-08-25</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="http://example.org/posts/flink-production-checklist/" data-title="Flink Production CheckList"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="http://example.org/posts/flink-production-checklist/"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="http://example.org/posts/flink-production-checklist/" data-title="Flink Production CheckList"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="http://example.org/posts/flink-production-checklist/" data-title="Flink Production CheckList"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@7.3.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="http://example.org/posts/flink-production-checklist/" data-title="Flink Production CheckList"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/my-first-post/" class="prev" rel="prev" title="My First Post"><i class="fas fa-angle-left fa-fw" aria-hidden="true"></i>My First Post</a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.101.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank"></a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>
