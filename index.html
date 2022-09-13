@@ -56,11 +56,29 @@
 </header><main class="main">
                 <div class="container"><div class="page home" data-home="posts"><div class="home-profile"><div class="home-subtitle"><div id="id-1" class="typeit"></div></div><div class="links"></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
+        <a href="/posts/flink%E4%BB%BB%E5%8A%A1%E4%B8%8D%E7%A8%B3%E5%AE%9A%E5%8E%9F%E5%9B%A0%E5%88%86%E6%9E%90/">Flink任务不稳定原因分析</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Author</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-09-13">2022-09-13</time></span></div><div class="content">Flink任务不稳定原因分析 1、数据类型映射问题 现象：Source读取数据时，类型转换报错
+解决方法：根据connector数据类型映射文档设置数据类型，避免运行时数据类型转换失败；
+2、JDBC写入速度慢导致checkpoint失败 现象：任务写入速度非常慢，跟数据库性能不符；
+解决方法：
+需要配置JDBC批量写入参数，提升写入速度； 输出到Kafka中，利用Kafka进行数据中转; 3、Join数据放大 **现象：**多次双流join后导致数据量膨胀过大；Flink中需要维护大量状态；
+解决方案：
+任务拆分，提升任务稳定性； 使用union操作替换join操作，利用数据库局部更新能力生成宽表； 4、写入数据库报死锁问题 **现象：**写入中出现大量数据库死锁异常；
+解决方法：
+根据主键或者唯一索引（根据表设计选择）进行数据混洗，避免死锁发生； 提升数据库性能； 5、任务卡死状态，无报错，卡在状态初始化阶段 **现象：**Task Manager长时间高CPU占用，导致Pod异常，无法从状态恢复；
+解决方法：
+降低任务复杂度，拆解任务；
+提升Task Manager的CPU数量；
+6、sink upsert material过期时间导致高cpu占用 **现象：**Task Manager中产生大量的过期状态清除日志，导致Task Manager CPU占用高；
+解决方法：
+设置较长的TTL时间避免频繁的状态清除； </div><div class="post-footer">
+        <a href="/posts/flink%E4%BB%BB%E5%8A%A1%E4%B8%8D%E7%A8%B3%E5%AE%9A%E5%8E%9F%E5%9B%A0%E5%88%86%E6%9E%90/">Read More</a></div>
+</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/posts/flink-production-checklist/">Flink Production CheckList</a>
     </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>LY</a></span>&nbsp;<span class="post-publish">published on <time datetime="2022-08-25">2022-08-25</time></span></div><div class="content">显式设置最大并行度 最大并行度决定了算子状态的扩展能力； 0 &lt; parallelism &lt;= max parallelism &lt;= 2^15； 默认128； 为DataStream每个算子设置UID UID用于savepoint中算子与状态的映射，更新JobGraph会导致UID的更新，设置固定的UID方便从Savepoint恢复； 选择合适的状态后端 目前状态后端有HashMapStateBackend和EmbeddedRocksDBStateBackend，需保存大状态的任务优先选择EmbeddedRocksDBStateBackend，也是目前云服务的默认状态后端； 选择合适的Checkpoint时间 根据服务的SLA时间；
 数据的写入间隔；
 TaskManager的性能，Checkpoint会增加额外的CPU负载；
-配置高可用的JobManager 优先选择增量Checkpoint 提升checkpoint速度，减少cpu负载； 批任务选择合适的Shuffle类型 批任务数据量大,并行度高时可选择sort merge join 根据Connector文档选择正确的数据类型映射 调试过程中会出现较多的数据类型不匹配的问题，可以通过catalog或脚本方式实现自动数据类型转换和映射； Jdbc Connector中tinyint(1)格式转换，tinyInt1isBit=false，时区也会影响查询准确性 Lookup Join需要评估维度表的性能是否满足产线需求 可以通过异步IO的方式提升维表Connector性能； 大表双流Join场景优先考虑是否可转换为Union操作 Jdbc Source优先配置流式读取 Sink端优先设置批量写入 Kafka Source需打开分区发现功能后才支持Topic动态扩展分区 可以合并多个SQL作业提升资源利用率 </div><div class="post-footer">
+配置高可用的JobManager 优先选择增量Checkpoint 提升checkpoint速度，减少cpu负载； 批任务选择合适的Shuffle类型 批任务数据量大,并行度高时可选择sort merge join 根据Connector文档选择正确的数据类型映射 调试过程中会出现较多的数据类型不匹配的问题，可以通过catalog或脚本方式实现自动数据类型转换和映射； Jdbc Connector中tinyint(1)格式转换，tinyInt1isBit=false，时区也会影响查询准确性 Lookup Join需要评估维度表的性能是否满足产线需求 可以通过异步IO的方式提升维表Connector性能； 大表双流Join场景优先考虑是否可转换为Union操作 Jdbc查询需注意时区配置 Jdbc Source优先配置流式读取 Sink端优先设置批量写入 Kafka Source需打开分区发现功能后才支持Topic动态扩展分区 Mysql CDC每个作业配置不同的server-id范围 默认会随机生成一个6400 - Integer.MAX_VALUE 的值 建议显式的定义server-id，避免不同作业读取同一个库可能出现的冲突问题，可以设置为范围值，例如5400-5405，也可以是单个值。也可以使用 SQL Hints 来指定server-id SELECT * FROM source_table /*+ OPTIONS(&#39;server-id&#39;=&#39;5401-5504&#39;) */ ; 可以合并多个SQL作业提升资源利用率 </div><div class="post-footer">
         <a href="/posts/flink-production-checklist/">Read More</a></div>
 </article></div></div>
             </main><footer class="footer">
