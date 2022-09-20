@@ -69,9 +69,9 @@
 解决方法：
 降低任务复杂度，拆解任务；
 提升Task Manager的CPU数量；
-6、sink upsert material过期时间导致高cpu占用 **现象：**Task Manager中产生大量的过期状态清除日志，导致Task Manager CPU占用高；
+6、checkpoint失败导致任务卡住 **现象：**checkpiont history界面出现连续失败记录；
 解决方法：
-设置较长的TTL时间避免频繁的状态清除； </div><div class="post-footer">
+设置非对齐的checkpoint提升checkpoint速度； 解决任务性能瓶颈； </div><div class="post-footer">
         <a href="/posts/flink%E4%BB%BB%E5%8A%A1%E4%B8%8D%E7%A8%B3%E5%AE%9A%E5%8E%9F%E5%9B%A0%E5%88%86%E6%9E%90/">Read More</a></div>
 </article><article class="single summary" itemscope itemtype="http://schema.org/Article"><h1 class="single-title" itemprop="name headline">
         <a href="/posts/flink-production-checklist/">Flink Production CheckList</a>
