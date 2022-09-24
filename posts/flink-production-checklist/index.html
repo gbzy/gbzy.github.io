@@ -51,7 +51,7 @@ TaskManager的性能，Checkpoint会增加额外的CPU负载；
             <a href="/" title="Nobody Blog">My cool site</a>
         </div>
         <div class="menu">
-            <div class="menu-inner"><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/tags/"> Tags </a><a class="menu-item" href="/categories/"> Categories </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
                     <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
                 </a></div>
         </div>
@@ -66,7 +66,7 @@ TaskManager的性能，Checkpoint会增加额外的CPU负载；
                 <span></span><span></span><span></span>
             </div>
         </div>
-        <div class="menu" id="menu-mobile"><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/tags/" title="">Tags</a><a class="menu-item" href="/categories/" title="">Categories</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
                 <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
             </a></div>
     </div>
@@ -146,8 +146,8 @@ TaskManager的性能，Checkpoint会增加额外的CPU负载；
 <li>默认会随机生成一个6400 - Integer.MAX_VALUE 的值</li>
 <li>建议显式的定义server-id，避免不同作业读取同一个库可能出现的冲突问题，可以设置为范围值，例如5400-5405，也可以是单个值。也可以使用 SQL Hints 来指定server-id</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> source_table <span style="color:#75715e">/*+ OPTIONS(&#39;server-id&#39;=&#39;5401-5504&#39;) */</span> ;
-</span></span></code></pre></div><h5 id="可以合并多个sql作业提升资源利用率">可以合并多个SQL作业提升资源利用率</h5>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">source_table</span><span class="w"> </span><span class="cm">/*+ OPTIONS(&#39;server-id&#39;=&#39;5401-5504&#39;) */</span><span class="w"> </span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div><h5 id="可以合并多个sql作业提升资源利用率">可以合并多个SQL作业提升资源利用率</h5>
 </div><div class="post-footer" id="post-footer">
     <div class="post-info">
         <div class="post-info-line">
@@ -175,7 +175,7 @@ TaskManager的性能，Checkpoint会增加额外的CPU负载；
 </article></div>
             </main><footer class="footer">
         <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.101.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
-                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank"></a></span></div>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">ly</a></span></div>
         </div>
     </footer></div>
 

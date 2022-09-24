@@ -9,7 +9,7 @@
     <title>Flink任务不稳定原因分析</title>
     <link>https://gbzy.github.io/posts/flink%E4%BB%BB%E5%8A%A1%E4%B8%8D%E7%A8%B3%E5%AE%9A%E5%8E%9F%E5%9B%A0%E5%88%86%E6%9E%90/</link>
     <pubDate>Tue, 13 Sep 2022 17:43:38 &#43;0800</pubDate>
-    <author>Author</author>
+    <author>ly</author>
     <guid>https://gbzy.github.io/posts/flink%E4%BB%BB%E5%8A%A1%E4%B8%8D%E7%A8%B3%E5%AE%9A%E5%8E%9F%E5%9B%A0%E5%88%86%E6%9E%90/</guid>
     <description><![CDATA[Flink任务不稳定原因分析 1、数据类型映射问题 现象：Source读取数据时，类型转换报错
 解决方法：根据connector数据类型映射文档设置数据类型，避免运行时数据类型转换失败；
@@ -25,7 +25,9 @@
 提升Task Manager的CPU数量；
 6、checkpoint失败导致任务卡住 **现象：**checkpiont history界面出现连续失败记录；
 解决方法：
-设置非对齐的checkpoint提升checkpoint速度； 解决任务性能瓶颈； ]]></description>
+设置非对齐的checkpoint提升checkpoint速度； 解决任务性能瓶颈； 7、SinkMaterializer算子性能瓶颈问题 **现象：**SinkMaterializer算子性能瓶颈，sql中有groupby操作导致该算子计算性能低下；
+解决方法：
+聚合操作不要启用该算子； 聚合后不要再进行join计算； ]]></description>
 </item>
 <item>
     <title>Flink Production CheckList</title>
